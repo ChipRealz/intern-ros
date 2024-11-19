@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import LocalSearchbar from "@/components/Search/LocalSearchbar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -21,19 +22,24 @@ export default async function Home() {
       </div>
 
       <div className="mt-11 flex justify-between gap-5">
+      <Suspense fallback={<div>Loading search bar...</div>}>
         <LocalSearchbar
           iconPosition="left"
           imgSrc="/assets/icons/search.svg"
           placeholder="Search for tasks"
         />
+      </Suspense>
+
+      <Suspense fallback={<div>Loading filters...</div>}>
         <Filter
           filters={[
-            { name: 'All Tasks', value: 'all' },
-            { name: 'Completed', value: 'completed' },
-            { name: 'Pending', value: 'pending' },
-            { name: 'In-Progress', value: 'in-progress' },
+            { name: "All Tasks", value: "all" },
+            { name: "Completed", value: "completed" },
+            { name: "Pending", value: "pending" },
+            { name: "In-Progress", value: "in-progress" },
           ]}
         />
+      </Suspense>
       </div>
 
       <div className="mt-10 flex w-full flex-col gap-6">
