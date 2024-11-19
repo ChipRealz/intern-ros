@@ -7,6 +7,8 @@ import NoResult from "@/components/NoResult/NoResult";
 import TaskCard from "@/components/Cards/TaskCard";
 import { getTasks } from "@/lib/actions/task.action";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const result = await getTasks(); 
   return (
