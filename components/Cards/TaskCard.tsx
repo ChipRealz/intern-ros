@@ -52,7 +52,7 @@ const TaskCard = ({
       {/* Author Info below description */}
       <div className="mt-4 flex items-center gap-3">
         <Image 
-          src={author.picture} 
+          src={author.picture}
           alt={author.name} 
           width={32} 
           height={32} 
