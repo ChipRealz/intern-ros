@@ -32,7 +32,11 @@ const formSchema = z.object({
     }), // Validation for valid status
   })
 
-const Task = () => {
+interface TaskProps {
+  mongoUserId: string;
+}
+
+const Task = ({mongoUserId} :TaskProps) => {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -52,7 +56,8 @@ const Task = () => {
         await createTask({
             title: values.title,
             description: values.description,
-            status: values.status
+            status: values.status,
+            author: JSON.parse(mongoUserId)
         })
        router.push('/');
     } catch (error) {
