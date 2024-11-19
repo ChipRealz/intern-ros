@@ -2,7 +2,7 @@
 
 import Task from "@/database/task.model";
 import { connectToDatabase } from "../mongoose";
-import { CreateTaskParams, GetTasksParams } from "./shared.types";
+import { CreateTaskParams } from "./shared.types";
 
 
 export async function createTask(params: CreateTaskParams) {
@@ -46,15 +46,13 @@ export async function createTask(params: CreateTaskParams) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getTasks(params: GetTasksParams){
+export async function getTasks() {
     try {
-        await connectToDatabase();
-
-        const tasks = await Task.find({});
-
-        return {tasks};
+      await connectToDatabase();
+      const tasks = await Task.find().populate('author');
+      return { tasks };
     } catch (error) {
-        console.error("Error getting tasks:", error);
-        throw new Error("Failed to get tasks.");
+      console.error("Error getting tasks:", error);
+      return { tasks: [] };
     }
 }

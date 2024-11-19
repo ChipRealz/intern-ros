@@ -3,6 +3,7 @@ export interface GetTasksParams {
     pageSize?: number;
     searchQuery?: string;
     filter?: string;
+    
 }
 
 export interface CreateTaskParams {

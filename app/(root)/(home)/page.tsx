@@ -8,8 +8,7 @@ import TaskCard from "@/components/Cards/TaskCard";
 import { getTasks } from "@/lib/actions/task.action";
 
 export default async function Home() {
-  const result = await getTasks({}); // Ensure this returns tasks with author information
-
+  const result = await getTasks(); 
   return (
     <>
       <div className="flex w-full items-center justify-between gap-4">
@@ -43,18 +42,20 @@ export default async function Home() {
       </div>
 
       <div className="mt-10 flex w-full flex-col gap-6">
-        {result.tasks.length > 0 ? (
-          result.tasks.map((task) => (
-            <TaskCard
-              key={task._id}
-              _id={task._id}
-              title={task.title}
-              description={task.description}
-              status={task.status}
-              createdAt={task.createdAt}
-              author={task.author} 
-            />
-          ))
+      {result.tasks.length > 0 ? (
+          result.tasks.map((task) => {
+            return (
+              <TaskCard
+                key={task._id}
+                _id={task._id}
+                title={task.title}
+                description={task.description}
+                status={task.status}
+                createdAt={task.createdAt}
+                author={task.author}
+              />
+            );
+          })
         ) : (
           <NoResult
             title="There’s no task to show"

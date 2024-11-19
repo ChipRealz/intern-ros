@@ -42,7 +42,11 @@ export const removeKeysFromQuery = ({ params, keysToRemove}: RemoveUrlQueryParam
   { skipNull: true})
 }
 
-export const getTimestamp = (createdAt: Date): string => {
+export const getTimestamp = (createdAt: Date | undefined): string => {
+  if (!createdAt || !(createdAt instanceof Date) || isNaN(createdAt.getTime())) {
+    return "Invalid date"; // Handle invalid date case
+  }
+
   const now = new Date();
   const timeDifference = now.getTime() - createdAt.getTime();
 
