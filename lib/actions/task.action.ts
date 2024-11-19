@@ -10,7 +10,7 @@ export async function createTask(params: CreateTaskParams) {
         await connectToDatabase();
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { title, description, status } = params;
+        const { title, description, status, author } = params;
 
         // Log parameters for debugging
         console.log("Creating task with parameters:", params);
@@ -24,7 +24,8 @@ export async function createTask(params: CreateTaskParams) {
         const task = await Task.create({
             title,
             description,
-            status
+            status,
+            author
         });
 
         // Convert the Mongoose document to a plain object and return only the necessary fields
@@ -47,7 +48,7 @@ export async function createTask(params: CreateTaskParams) {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getTasks(params: GetTasksParams){
     try {
-        connectToDatabase();
+        await connectToDatabase();
 
         const tasks = await Task.find({});
 

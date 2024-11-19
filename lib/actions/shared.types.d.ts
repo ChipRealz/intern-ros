@@ -9,6 +9,7 @@ export interface CreateTaskParams {
     title: string;
     description: string;
     status: string;
+    author: Schema.Types.ObjectId | IUser;
 }
 
 export interface CreateUserParams {
