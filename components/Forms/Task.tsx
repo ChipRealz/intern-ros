@@ -24,6 +24,7 @@ import {
 import { useState } from "react";
 import { createTask, editTask } from "@/lib/actions/task.action";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(10, {
@@ -81,6 +82,10 @@ const Task = ({ mongoUserId, type, taskDetails }: TaskProps) => {
           path: pathname,
         });
         router.push("/");
+        return toast({
+          title: 'Add task successfully',
+          description: 'Your task has been successfully added',
+        });
       }
     } catch (error) {
       console.error("Failed to create task:", error);

@@ -4,6 +4,7 @@ import Task from "@/database/task.model";
 import { connectToDatabase } from "../mongoose";
 import { CreateTaskParams, editTaskParams, GetTasksParams } from "./shared.types";
 import { revalidatePath } from "next/cache";
+import { FilterQuery } from "mongoose";
 
 
 export async function createTask(params :CreateTaskParams){
@@ -29,10 +30,54 @@ export async function createTask(params :CreateTaskParams){
 export async function getTasks(params: GetTasksParams) {
   try {
     await connectToDatabase();
+    console.log("Connected to the database");
 
-    const tasks = await Task.find({}).populate('author', 'name picture');
+    const { searchQuery, filter, page = 1, pageSize = 2 } = params;
 
-    return { tasks };
+    const skipAmount = (page - 1)* pageSize;
+
+
+    const query: FilterQuery<typeof Task> = {};
+
+    if (searchQuery) {
+      query.title = { $regex: searchQuery, $options: 'i' };
+    }
+
+    // Filter by status
+    if (filter === 'completed' || filter === 'pending' || filter === 'in-progress') {
+      query.status = filter;
+    }
+
+    console.log("Query:", query);
+
+    let sortOptions = {};
+
+    // Sort by creation date
+    switch (filter) {
+      case 'latest':
+        sortOptions = { createdAt: -1 }; // Sort by createdAt in descending order
+        break;
+      case 'oldest':
+        sortOptions = { createdAt: 1 }; // Sort by createdAt in ascending order
+        break;
+      default:
+        sortOptions = {}; 
+        break;
+    }
+
+    console.log("Sort Options:", sortOptions);
+
+    const tasks = await Task.find(query)
+      .populate('author', 'name picture')
+      .skip(skipAmount)
+      .limit(pageSize)
+      .sort(sortOptions);
+
+    const totalTasks = await Task.countDocuments(query);
+
+    const isNext = totalTasks > skipAmount + tasks.length;
+
+    return { tasks, isNext };
   } catch (error) {
     console.error("Error getting tasks:", error);
     throw new Error("Failed to get tasks.");

@@ -5,9 +5,15 @@ import Filter from "@/components/Filter/FilterTask";
 import NoResult from "@/components/NoResult/NoResult";
 import TaskCard from "@/components/Cards/TaskCard";
 import { getTasks } from "@/lib/actions/task.action";
+import { SearchParamsProps } from "@/types";
+import Pagination from "@/components/shared/Pagination";
 
-export default async function Home() {
-  const result = await getTasks({}); 
+export default async function Home({ searchParams }: SearchParamsProps) {
+  const result = await getTasks({
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page : 1,
+  }); 
 
   return (
     <>
@@ -22,16 +28,18 @@ export default async function Home() {
 
       <div className="mt-11 flex justify-between gap-5">
         <LocalSearchbar
+          route="/"
           iconPosition="left"
           imgSrc="/assets/icons/search.svg"
           placeholder="Search for tasks"
         />
         <Filter
           filters={[
-            { name: 'All Tasks', value: 'all' },
+            { name: 'Latest Tasks', value: 'latest' },
             { name: 'Completed', value: 'completed' },
-            { name: 'Pending', value: 'pending' },
-            { name: 'In-Progress', value: 'in-progress' },
+            { name: 'In Progress', value: 'in-progress' },
+            { name: 'Pending', value: 'pending'},
+            { name: 'Oldest Tasks', value: 'oldest' },
           ]}
         />
       </div>
@@ -57,6 +65,12 @@ export default async function Home() {
             linkTitle="Add Task"
           />
         )}
+      </div>
+      <div className="mt-10">
+      <Pagination 
+        pageNumber = {searchParams?.page ? +searchParams.page : 1}
+        isNext = {result.isNext}
+      />
       </div>
     </>
   );
