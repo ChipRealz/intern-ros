@@ -11,6 +11,7 @@ export interface CreateTaskParams {
     description: string;
     status: string;
     author: Schema.Types.ObjectId | IUser;
+    path: string;
 }
 
 export interface CreateUserParams {
@@ -19,7 +20,7 @@ export interface CreateUserParams {
     username: string;
     email: string;
     picture: string;
-}
+  }
 
   export interface UpdateUserParams {
     clerkId: string;
