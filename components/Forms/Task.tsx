@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
-import { createTask } from "@/lib/actions/task.action";
+import { createTask, editTask } from "@/lib/actions/task.action";
 import { usePathname, useRouter } from "next/navigation";
 
 const formSchema = z.object({
@@ -49,32 +49,39 @@ const Task = ({ mongoUserId, type, taskDetails }: TaskProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const pathname = usePathname();
 
+  const parsedTaskDetails = taskDetails ? JSON.parse(taskDetails) : {}
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      status: "pending",
+      title: parsedTaskDetails.title || '',
+      description: parsedTaskDetails.description || '',
+      status: parsedTaskDetails.status || '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const author = JSON.parse(mongoUserId);
-      console.log("Parsed Author:", author);
-      console.log("Author ID:", author._id);
-      console.log("Author Picture:", author.picture);
-      console.log("Author Name:", author.name);
-
-      await createTask({
-        title: values.title,
-        description: values.description,
-        status: values.status,
-        author,
-        path: pathname,
-      });
-      router.push("/");
+      if(type === 'Edit') {
+        await editTask({
+          taskId: parsedTaskDetails._id,
+          title: values.title,
+          description: values.description,
+          status: values.status,
+          path: pathname,
+        })
+        router.push(`/task/${parsedTaskDetails._id}`);
+      } else {
+        await createTask({
+          title: values.title,
+          description: values.description,
+          status: values.status,
+          author: JSON.parse(mongoUserId),
+          path: pathname,
+        });
+        router.push("/");
+      }
     } catch (error) {
       console.error("Failed to create task:", error);
     } finally {
@@ -149,7 +156,15 @@ const Task = ({ mongoUserId, type, taskDetails }: TaskProps) => {
         />
 
         <Button type="submit" disabled={isSubmitting}>
-          Submit
+          {isSubmitting ? (
+            <>
+              {type === 'Edit' ? 'Editng...' : 'Adding...'}
+            </>
+          ):(
+            <>
+            {type === 'Edit' ? 'Edit Task' : 'Add Task'}
+            </>
+          )}
         </Button>
       </form>
     </Form>

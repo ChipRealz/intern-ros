@@ -31,3 +31,11 @@ export interface CreateUserParams {
 export interface DeleteUserParams {
     clerkId: string;
 }
+
+export interface editTaskParams {
+  taskId: string;
+  title: string;
+  description: string;
+  status: string;
+  path: string;
+}

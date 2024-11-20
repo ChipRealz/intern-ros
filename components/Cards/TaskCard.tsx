@@ -2,6 +2,8 @@ import { getTimestamp } from '@/lib/utils';
 import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
+import { SignedIn } from '@clerk/nextjs';
+import EditDeleteAction from '../shared/EditDeleteAction';
 
 interface TaskProps {
   _id: string;
@@ -29,7 +31,7 @@ const TaskCard = ({
   console.log('Author Name:', author.name);
 
   return (
-    <div className='bg-white border border-gray-200 rounded-lg shadow-md p-6'>
+    <div className='bg-white border border-gray-200 rounded-lg shadow-md p-6 relative'>
       <div className='flex flex-col items-start justify-between gap-5'>
         <div>
           <Link href={`/task/${_id}`}>
@@ -62,6 +64,15 @@ const TaskCard = ({
         />
         <span className="text-sm font-medium text-gray-700">{author.name}</span>
       </div>
+
+      <SignedIn>
+        <div className="absolute bottom-4 right-4">
+          <EditDeleteAction
+            type="Task"
+            itemId={JSON.stringify(_id)}
+          />
+        </div>
+      </SignedIn>
     </div>
   );
 };

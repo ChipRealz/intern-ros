@@ -2,7 +2,7 @@
 
 import Task from "@/database/task.model";
 import { connectToDatabase } from "../mongoose";
-import { CreateTaskParams, GetTasksParams } from "./shared.types";
+import { CreateTaskParams, editTaskParams, GetTasksParams } from "./shared.types";
 import { revalidatePath } from "next/cache";
 
 
@@ -61,36 +61,13 @@ export async function getTaskById(taskId: string) {
     }
   }
 
-export async function updateTask(taskId: string, taskData: CreateTaskParams) {
+export async function deleteTask(taskId: string, path: string) {
     try {
         await connectToDatabase();
 
-        const task = await Task.findByIdAndUpdate(taskId, taskData, { new: true });
+        await Task.deleteOne({_id : taskId});
 
-        if (!task) {
-            throw new Error("Task not found.");
-        }
-
-        return task;
-
-    }
-    catch (error) {
-        console.error("Error updating task:", error);
-        throw new Error("Failed to update task.");
-    }
-}
-
-export async function deleteTask(taskId: string) {
-    try {
-        await connectToDatabase();
-
-        const task = await Task.findByIdAndDelete(taskId);
-
-        if (!task) {
-            throw new Error("Task not found.");
-        }
-
-        return task;
+        revalidatePath(path);
 
     }
     catch (error) {
@@ -99,20 +76,29 @@ export async function deleteTask(taskId: string) {
     }
 }
 
-export async function editTask(taskId: string, taskData: CreateTaskParams) {
-    try {
+export async function editTask(params: editTaskParams) {
+  try {
       await connectToDatabase();
-  
-      const task = await Task.findByIdAndUpdate(taskId, taskData, { new: true });
-  
-      if (!task) {
-        throw new Error("Task not found.");
+
+      const {taskId, title, description, status, path} = params;
+
+      const task = await Task.findById(taskId)
+
+      if(!task){
+        throw new Error('Task not found')
       }
-  
-      console.log("Updated task:", task); // Log the updated task
-      return task;
-    } catch (error) {
-      console.error("Error updating task:", error);
-      throw new Error("Failed to update task.");
-    }
+
+      task.title = title;
+      task.description = description;
+      task.status = status;
+
+      await task.save();
+
+      revalidatePath(path);
+
   }
+  catch (error) {
+      console.error("Error deleting task:", error);
+      throw new Error("Failed to delete task.");
+  }
+}
